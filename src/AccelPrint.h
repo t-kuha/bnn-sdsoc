@@ -3,6 +3,8 @@
 
 #include "Accel.h"
 #include <stdio.h>
+#include <iostream>
+#include <iomanip>
 
 //------------------------------------------------------------------------
 // For an array of ap_int's, sets/gets the bit at bit_idx
