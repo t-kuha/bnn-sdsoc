@@ -81,6 +81,7 @@ void conv_word(
 ) {
   for (ap_uint<4> bank = 0; bank < CONV_BANKS; ++bank) {
     for (ap_uint<4> cc = 0; cc < BANK_WIDTH; ++cc) {
+#pragma HLS PIPELINE
       conv_out_buffer_m[bank*BANK_WIDTH+cc] = conv3x3b( line_buffer_m, conv_params_m, bank, cc );
     }
   }
@@ -264,6 +265,7 @@ void bin_conv(
     // is WORDS_PER_PHASE + images_per_phase
     LOOP_WORDS_IN_PHASE:
     for (ap_uint<8> count = 0; count < WORDS_PER_PHASE+images_per_phase; ++count) {
+#pragma HLS PIPELINE
 #pragma HLS LOOP_TRIPCOUNT min=17 max=32
       // First word of an image
       if (wrd == 0) {
@@ -379,6 +381,7 @@ void bin_conv(
 
     LOOP_ACC_PHASES_I:
     for (ap_uint<8> i = words_per_image; i < WORDS_PER_PHASE; i += words_per_image) {
+#pragma HLS PIPELINE
 #pragma HLS LOOP_TRIPCOUNT min=1 max=16
       for (IdxType b = 0; b < WORD_SIZE; ++b) {
         fixed_temp[b] += fixed_buffer[w+i][b];
@@ -404,6 +407,7 @@ void bin_conv(
   Word poolword;
   LOOP_BATCH_NORM:
   for (ap_uint<6> w = 0; w < words_per_image; ++w) {
+#pragma HLS PIPELINE
 #pragma HLS LOOP_TRIPCOUNT min=1 max=16
     Word binword;
     Address o_bank_idx = bank_idx;
@@ -515,6 +519,7 @@ void fp_conv(
     // begin convolution
     LOOP_CONV_ROWS: for (IdxType r = 0; r < S+1; ++r) {
       LOOP_CONV_COLS: for (IdxType c = 0; c < S+1; ++c) {
+#pragma HLS PIPELINE
         // load input word
         Word inword = 0;
         if (r < S && c < S) {
@@ -577,6 +582,7 @@ void fp_conv(
     // Here i is the word offset within the outwords buffer
     LOOP_OUTPUT:
     for (IdxType i = 0; i < OUTWORDS; ++i) {
+#pragma HLS PIPELINE
       Address img_idx = o_index+n;
       Address bank_idx = img_idx % CONVOLVERS;
       Address bank_off = img_idx / CONVOLVERS;
@@ -618,6 +624,7 @@ void bin_dense(
 
     LOOP_DENSE_I:
     for (Address i = 0; i < n_inputs; i+=CONVOLVERS*WORD_SIZE) {
+#pragma HLS PIPELINE
 #pragma HLS LOOP_TRIPCOUNT min=1 max=64
       const Address wt_addr = (o*n_inputs+i) / WORD_SIZE;
 
@@ -755,6 +762,7 @@ void top(
   Address img_idx = 0;  // i / words_per_image;
   IdxType img_off = 0;  // i % words_per_image;
   LOOP_DMEM_I: for (Address i = 0; i < input_words; ++i) {
+#pragma HLS PIPELINE
 #pragma HLS LOOP_TRIPCOUNT min=1 max=512
     if (layer_type == LAYER_CONV) {
       Address bank_idx = img_idx % CONVOLVERS;
@@ -775,13 +783,16 @@ void top(
   // Weight input, we must copy every 64-bit Word from the interface
   // into the accelerator
   LOOP_WT_I: for (Address i = 0; i < C_WT_WORDS*CONVOLVERS; ++i) {
+#pragma HLS PIPELINE
     wt_mem[i%CONVOLVERS][i/CONVOLVERS] = wt_i[i];
   }
   //printf ("\nAccel Weights:\n");
   //print_params3d(wt_mem[0], 0, n_inputs*n_outputs);
 
-  LOOP_KH_I: for (ap_uint<16> i = 0; i < KH_WORDS; ++i)
+  LOOP_KH_I: for (ap_uint<16> i = 0; i < KH_WORDS; ++i){
+#pragma HLS PIPELINE
     kh_mem[i] = kh_i[i];
+  }
 
   if (layer_type == LAYER_CONV1) {
     assert(n_inputs == 3);
@@ -846,6 +857,7 @@ void top(
   img_idx = 0;
   img_off = 0;
   LOOP_DMEM_O: for (Address i = 0; i < output_words; ++i) {
+#pragma HLS PIPELINE
 #pragma HLS LOOP_TRIPCOUNT min=1 max=1
     // exclude conv6 (width==8, norm_mode==2) here because it writes
     // the output fmaps linearly
