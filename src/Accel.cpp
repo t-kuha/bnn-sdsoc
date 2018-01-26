@@ -250,6 +250,7 @@ void bin_conv(
   // ---------------------------------------------------------------------
   LOOP_PHASES:
   for (ap_uint<10> p = 0; p < n_phases; p += images_per_phase) {
+#pragma HLS LOOP_TRIPCOUNT min=1 max=512
     DB(3, printf ("=== PHASE %d ===\n", p.to_int()) );
 
     // wrd = which word in the current image
@@ -263,6 +264,7 @@ void bin_conv(
     // is WORDS_PER_PHASE + images_per_phase
     LOOP_WORDS_IN_PHASE:
     for (ap_uint<8> count = 0; count < WORDS_PER_PHASE+images_per_phase; ++count) {
+#pragma HLS LOOP_TRIPCOUNT min=17 max=32
       // First word of an image
       if (wrd == 0) {
         Word wt_word_buffer[CONVOLVERS];
@@ -369,6 +371,7 @@ void bin_conv(
 
   LOOP_ACC_PHASES:
   for (ap_uint<5> w = 0; w < words_per_image; ++w) {
+#pragma HLS LOOP_TRIPCOUNT min=1 max=1
     for (IdxType b = 0; b < WORD_SIZE; ++b) {
       #pragma HLS unroll
       fixed_temp[b] = fixed_buffer[w][b];
@@ -376,6 +379,7 @@ void bin_conv(
 
     LOOP_ACC_PHASES_I:
     for (ap_uint<8> i = words_per_image; i < WORDS_PER_PHASE; i += words_per_image) {
+#pragma HLS LOOP_TRIPCOUNT min=1 max=16
       for (IdxType b = 0; b < WORD_SIZE; ++b) {
         fixed_temp[b] += fixed_buffer[w+i][b];
     } }
@@ -400,6 +404,7 @@ void bin_conv(
   Word poolword;
   LOOP_BATCH_NORM:
   for (ap_uint<6> w = 0; w < words_per_image; ++w) {
+#pragma HLS LOOP_TRIPCOUNT min=1 max=16
     Word binword;
     Address o_bank_idx = bank_idx;
     Address o_bank_offset = bank_off*words_per_image + w;
@@ -477,6 +482,7 @@ void fp_conv(
   // Parallelized across m, better for HLS
   LOOP_FP_CONV_O:
   for (IdxType n = 0; n < N; ++n) {
+#pragma HLS LOOP_TRIPCOUNT min=1 max=32
 
     // clear linebuffers for each new output map
     LOOP_RESET_LINEBUFFERS:
@@ -603,6 +609,7 @@ void bin_dense(
   // o is the output bit, i is the input bit
   LOOP_DENSE_O:
   for (Address o = 0; o < n_outputs; ++o) {
+#pragma HLS LOOP_TRIPCOUNT min=1 max=1
     const Address o_addr = (o_index+o)/WORD_SIZE;
     const ap_uint<6> o_offset = (o_index+o) % WORD_SIZE;
     Word o_word = dmem[d_o_idx][o_addr%CONVOLVERS][o_addr/CONVOLVERS];
@@ -611,6 +618,7 @@ void bin_dense(
 
     LOOP_DENSE_I:
     for (Address i = 0; i < n_inputs; i+=CONVOLVERS*WORD_SIZE) {
+#pragma HLS LOOP_TRIPCOUNT min=1 max=64
       const Address wt_addr = (o*n_inputs+i) / WORD_SIZE;
 
       for (IdxType j = 0; j < CONVOLVERS; ++j) {
@@ -747,6 +755,7 @@ void top(
   Address img_idx = 0;  // i / words_per_image;
   IdxType img_off = 0;  // i % words_per_image;
   LOOP_DMEM_I: for (Address i = 0; i < input_words; ++i) {
+#pragma HLS LOOP_TRIPCOUNT min=1 max=512
     if (layer_type == LAYER_CONV) {
       Address bank_idx = img_idx % CONVOLVERS;
       Address bank_off = img_idx / CONVOLVERS;
@@ -797,6 +806,7 @@ void top(
 
     LOOP_IMG_BATCH:
     for (IdxType i = 0; i < n_outputs; ++i) {
+#pragma HLS LOOP_TRIPCOUNT min=1 max=1
       // Load the batch-norm parameters for this output
       NormComp nc;
       load_kh(nc, kh_mem, kh_index);
@@ -836,6 +846,7 @@ void top(
   img_idx = 0;
   img_off = 0;
   LOOP_DMEM_O: for (Address i = 0; i < output_words; ++i) {
+#pragma HLS LOOP_TRIPCOUNT min=1 max=1
     // exclude conv6 (width==8, norm_mode==2) here because it writes
     // the output fmaps linearly
     if (layer_type <= LAYER_CONV && !(width_mode == 0 && norm_mode == 2)) {
