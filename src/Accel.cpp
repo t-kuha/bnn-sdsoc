@@ -491,6 +491,7 @@ void fp_conv(
     // clear linebuffers for each new output map
     LOOP_RESET_LINEBUFFERS:
     for (IdxType m = 0; m < M; ++m) {
+#pragma HLS UNROLL region
       PROLOG_COLS: for (IdxType c = 0; c < S; ++c) {
         PROLOG_ROWS: for (IdxType r = 0; r < K/2; ++r) {
           for (IdxType lr = 0; lr < K-2; ++lr) {
@@ -506,6 +507,7 @@ void fp_conv(
     Word wt_word = wt_mem[n % CONVOLVERS][n / CONVOLVERS];
     LOOP_LOAD_WTS:
     for (ap_uint<2> m = 0; m < M; ++m) {
+#pragma HLS UNROLL
       wtbuf[m] = wt_word((m+1)*WT_SIZE-1, m*WT_SIZE);
       DB(3, print_wt(wtbuf[m]));
       DB(3, printf("--\n"));
