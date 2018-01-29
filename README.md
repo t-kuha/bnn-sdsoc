@@ -15,3 +15,48 @@
 ```    
 
 ***
+
+#### Execution Result
+
+```bash
+root@z7_20:/run/media/mmcblk0p1# export CRAFT_BNN_ROOT=`pwd
+root@z7_20:/run/media/mmcblk0p1# ./bnn-fpga.elf 1
+* WT_WORDS   = 4682
+* KH_WORDS   = 64
+## Loading input data ##
+## Loading parameters ##
+>> (Wt, KH) batch: (10924 256)
+>> Final batch: 128
+>> (Wt, KH) batch: (256 256)
+>> Final batch: 128
+>> (Wt, KH) batch: (256 256)
+>> Final batch: 256
+>> (Wt, KH) batch: (128 256)
+>> Final batch: 128
+>> (Wt, KH) batch: (128 256)
+>> Final batch: 128
+>> (Wt, KH) batch: (64 256)
+>> Final batch: 64
+>> (Wt, KH) bits batch: (36 256)
+>> Final bits batch: 32
+>> (Wt, KH) bits batch: (292 256)
+>> Final bits batch: 256
+>> (Wt, KH) bits batch: (292 256)
+>> Final bits batch: 10
+## Running BNN for 1 images
+  Pred/Label:    3/ 3   [ OK ]
+
+Errors: 0 (0.00%)
+
+Total accel runtime =     0.0139 seconds
+
+xl-Conv1            :      1 calls;  0.133 msecs total time
+xl-Conv2            :      1 calls;  0.001 secs total time
+xl-Conv3            :      1 calls;  0.002 secs total time
+xl-Conv4            :      2 calls;  0.002 secs total time
+xl-Conv5            :      4 calls;  0.002 secs total time
+xl-Conv6            :      8 calls;  0.003 secs total time
+xl-FC1              :     32 calls;  0.002 secs total time
+xl-FC2              :      4 calls;  0.229 msecs total time
+xl-FC3              :      1 calls;  0.065 msecs total time
+```
