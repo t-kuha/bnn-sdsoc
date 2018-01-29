@@ -268,6 +268,7 @@ void bin_conv(
     // is WORDS_PER_PHASE + images_per_phase
     LOOP_WORDS_IN_PHASE:
     for (ap_uint<8> count = 0; count < WORDS_PER_PHASE+images_per_phase; ++count) {
+#pragma HLS DEPENDENCE variable=fixed_buffer inter false
 #pragma HLS PIPELINE
 #pragma HLS LOOP_TRIPCOUNT min=17 max=32
       // First word of an image
