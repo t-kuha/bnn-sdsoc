@@ -156,19 +156,19 @@
 </est:Report>
 ```
 
+
 + Timing (ns): 
-* Summary: 
 
 |  Clock | Target| Estimated| Uncertainty|
 |-------:|------:|---------:|-----------:|
 |ap_clk  |  10.00|      8.42|        2.70|
 
+
 + Latency (clock cycles): 
 
-
 |    Latency  | |    Interval | | Pipeline|
-|  min |   max  |  min |   max  |   Type  |
 |-----:|-------:|-----:|-------:|--------:|
+|  min |   max  |  min |   max  |   Type  |
 |  4775|  533732|  4775|  533732|   none  |
 
 
@@ -219,7 +219,6 @@
 |-----:|--------:|-----:|--------:|--------:|
 |  min |   max   |  min |   max   |   Type  |
 |  4775|  2106082|  4775|  2106082|   none  |
-
 
 
 * Utilization Estimates: 
