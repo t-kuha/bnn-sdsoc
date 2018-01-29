@@ -47,6 +47,7 @@ void print_line_buffer_m(T lbuf[CONV_BANKS]) {
 }
 
 TwoBit encode_bit(const Bit& b) {
+#pragma HLS INLINE
   return (b == 0) ? TwoBit(1) : TwoBit(-1);
 }
 
@@ -59,6 +60,7 @@ ConvOut conv3x3b(
     const ap_uint<4> bank,
     const IdxType cc
 ) {
+#pragma HLS INLINE
   ConvOut sum = 0;
   for (ap_uint<2> kr = 0; kr < K; ++kr) {
     for (ap_uint<2> kc = 0; kc < K; ++kc) {
@@ -103,6 +105,7 @@ void process_word(
     const   ap_uint<6> words_per_image,
     const   IdxType wrd
 ) {
+#pragma HLS INLINE
   // slices_per_line = width / BANK_WIDTH
   const ap_uint<5> slices_per_line = 1 << (log_width - LOG_BANK_WIDTH);
   const bool first_wrd = (wrd == 0);
