@@ -221,6 +221,19 @@ void bin_conv(
   bool lb[CONV_BANKS];
   bool rb[CONV_BANKS];
 
+#pragma HLS ARRAY_PARTITION variable=line_buffer complete dim=0
+#pragma HLS ARRAY_PARTITION variable=conv_params complete dim=0
+#pragma HLS ARRAY_PARTITION variable=fixed_buffer complete dim=2
+#pragma HLS ARRAY_PARTITION variable=fixed_temp complete dim=0
+#pragma HLS ARRAY_PARTITION variable=word_buffer complete dim=0
+#pragma HLS ARRAY_PARTITION variable=old_word_buffer complete dim=0
+#pragma HLS ARRAY_PARTITION variable=lb complete dim=0
+#pragma HLS ARRAY_PARTITION variable=rb complete dim=0
+#pragma HLS ARRAY_PARTITION variable=line_buffer complete dim=0
+#pragma HLS ARRAY_PARTITION variable=line_buffer complete dim=0
+#pragma HLS ARRAY_PARTITION variable=conv_out_buffer complete dim=0
+
+
   static Address wt_addr = 0;           // address of weight word
   static ap_uint<3> wt_offset = 0;      // offset 0..6 of param
   if (new_batch != 0) { wt_addr = 0; wt_offset = 0; }
@@ -274,6 +287,7 @@ void bin_conv(
       // First word of an image
       if (wrd == 0) {
         Word wt_word_buffer[CONVOLVERS];
+#pragma HLS ARRAY_PARTITION variable=wt_word_buffer complete dim=0
 
         // -------------------------------------------------------------------
         // Load param word
@@ -483,6 +497,10 @@ void fp_conv(
   C1InputType lbuf[M][K-1][S];
   Word outwords[OUTWORDS];
   WtType wtbuf[M];
+#pragma HLS ARRAY_PARTITION variable=win complete dim=0
+#pragma HLS ARRAY_PARTITION variable=lbuf complete dim=0
+#pragma HLS ARRAY_PARTITION variable=outwords complete dim=0
+#pragma HLS ARRAY_PARTITION variable=wtbuf complete dim=0
 
   Address wt_offset = 0;
   ap_uint<3> wt_addr = 0;
@@ -752,6 +770,10 @@ void top(
   static Word wt_mem[CONVOLVERS][C_WT_WORDS];
   static Address kh_index = 0;
   static Address o_index = 0;
+
+#pragma HLS ARRAY_PARTITION variable=dmem complete dim=1
+#pragma HLS ARRAY_PARTITION variable=dmem complete dim=2
+#pragma HLS ARRAY_PARTITION variable=wt_mem complete dim=1
 
   if (layer_mode[0]) {
     kh_index = 0;
