@@ -19,7 +19,7 @@
 #### Execution Result
 
 ```bash
-root@z7_20:/run/media/mmcblk0p1# export CRAFT_BNN_ROOT=`pwd
+root@z7_20:/run/media/mmcblk0p1# export CRAFT_BNN_ROOT=`pwd`
 root@z7_20:/run/media/mmcblk0p1# ./bnn-fpga.elf 1
 * WT_WORDS   = 4682
 * KH_WORDS   = 64
