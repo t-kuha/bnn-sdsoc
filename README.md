@@ -1,6 +1,6 @@
 # bnn-sdsoc
 
-- This repo is copyed from https://github.com/cornell-zhang/bnn-fpga
+- This repo is copied from https://github.com/cornell-zhang/bnn-fpga
 
 ```
   @article{zhao-bnn-fpga2017,
@@ -16,9 +16,9 @@
 
 ***
 
-#### Execution Result
+## Execution Result
 
-```bash
+```shell-session
 root@z7_20:/run/media/mmcblk0p1# export CRAFT_BNN_ROOT=`pwd`
 root@z7_20:/run/media/mmcblk0p1# ./bnn-fpga.elf 1
 * WT_WORDS   = 4682
